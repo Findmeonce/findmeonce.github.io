@@ -1,84 +1,398 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en" data-theme="auto">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Nous allons se rencontrer une fois.</title>
-  <meta name="description" content="Nous allons se rencontrer une fois. — findmeonce">
-  <link rel="icon" href="/favicon.ico">
-  <link rel="stylesheet" href="styles.css">
+  <title>Findmeonce</title>
+  <meta name="description" content="Modern, mobile-first personal hub for social links, affiliates, and recent content." />
+  <meta property="og:title" content="Findmeonce" />
+  <meta property="og:description" content="Socials, affiliate links, and recent content in one clean SaaS-style page." />
+  <meta property="og:type" content="website" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="assets/favicon.svg" />
+  <meta name="theme-color" content="#fbfdff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b0f14" media="(prefers-color-scheme: dark)">
+
+  <style>
+    /* =========================================================================
+       THEME VARIABLES (clair / sombre)
+       ========================================================================= */
+    :root{
+      --bg: #fbfdff;
+      --text: #0d1220;
+      --muted: #55627a;
+      --card: #ffffff;
+      --border: #e7ebf3;
+      --surface-2:#f2f4f8;
+      --contact-bg: #f5faff; /* bleu pâle */
+      --accent: #2563eb;
+      --accent-2:#0a66c2;
+      --green-1:#10b981; --green-2:#22c55e; --green-3:#16a34a;
+      --radius: 12px;
+      --shadow-hover: 0 8px 24px rgba(2,18,46,.08);
+      --space-3:.75rem; --space-4:1rem;
+    }
+    [data-theme="dark"]{
+      --bg: #0b0f14;
+      --text: #e6edf7;
+      --muted: #a6b3c9;
+      --card: #0f1722;
+      --border: #1c2636;
+      --surface-2:#0f1722;
+      --contact-bg: #0e1522; /* bleu très sombre */
+      --shadow-hover: 0 12px 28px rgba(0,0,0,.45);
+    }
+
+    /* =========================================================================
+       RESET DE BASE + CONTENEURS
+       ========================================================================= */
+    html,body{height:100%;}
+    body{
+      margin:0; background:var(--bg); color:var(--text);
+      -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+    }
+    .container{ width:min(1100px, 92%); margin:0 auto; }
+    .section{ padding:3rem 0; position:relative; isolation:isolate; }
+    .section-head{ margin-bottom:1rem; }
+    .muted{ color:var(--muted); }
+
+    /* Empêche marges de s’effondrer et fonds de “dépasser” les sections */
+    .section, .contact-section, .hero{ overflow:clip; }
+    .section > *:first-child{ margin-top:0; }
+    .section > *:last-child{ margin-bottom:0; }
+
+    /* =========================================================================
+       COMPOSANTS
+       ========================================================================= */
+    .grid.cards{
+      display:grid; gap:1rem;
+      grid-template-columns: repeat(auto-fit,minmax(240px,1fr));
+    }
+    .card.link-card{
+      display:flex; align-items:center; gap:.9rem;
+      padding:1rem 1.1rem; border-radius:var(--radius);
+      border:1px solid var(--border); background:var(--card);
+      transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease, background-color .15s ease;
+    }
+    .card.link-card:hover{ transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+    .arrow{ margin-left:auto; color:var(--muted); }
+    .icon-wrap svg{ display:block; width:24px; height:24px; }
+
+    .brand-name{ font-weight:700; }
+    .hero.container{ padding-top:2rem; display:flex; align-items:stretch; gap:2rem; }
+    .hero-panel.card{ display:flex; align-items:center; justify-content:center; }
+
+    .gradient-text{
+      background: linear-gradient(90deg,#0ea5e9,#2563eb,#0a66c2);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+
+    /* Pastille 10% OFF */
+    .gradient-green{
+      background: linear-gradient(90deg,var(--green-1),var(--green-2),var(--green-3));
+      -webkit-background-clip: text; background-clip: text; color: transparent; font-weight:700;
+    }
+    .deal-pill{
+      display:inline-flex; align-items:center; gap:.4rem;
+      padding:.25rem .5rem; border-radius:999px;
+      background: color-mix(in oklab, var(--green-1) 12%, transparent);
+      border:1px solid color-mix(in oklab, var(--green-2) 28%, transparent);
+      font-size:.8rem; line-height:1; margin-bottom:.5rem;
+    }
+
+    /* Contact*/
+    .contact-section{
+      background: var(--contact-bg);
+      padding: 4rem 0;
+      border-block: 1px solid var(--border);
+      position:relative; isolation:isolate; overflow:clip; /* évite tout dépassement visuel */
+    }
+    .contact-section .cards .link-card{ background:var(--card); border:1px solid var(--border); }
+    .contact-section .arrow{ color:var(--text); }
+
+    /* Embeds uniformisés (évite le “décalage”) */
+    .content-card{ padding:var(--space-4); display:grid; gap:var(--space-3); background:var(--card); border:1px solid var(--border); border-radius:var(--radius); }
+    .content-card.flush{ padding:0; overflow:hidden; }
+    .embed{ position:relative; width:100%; aspect-ratio:16/9; border-radius:10px; overflow:hidden; background:var(--surface-2); }
+    .embed iframe{
+      position:absolute; inset:0; width:100%; height:100%;
+      border:0; border-radius:0 !important; display:block; background:transparent;
+    }
+    .embed--spotify{ aspect-ratio:auto; height:352px; } /* Spotify contrôlé */
+    .embed--spotify iframe{ height:100%; }
+
+    /* Vignettes */
+    .content-card .thumb{ display:block; border-radius:10px; overflow:hidden; }
+    .content-card .thumb img{ display:block; width:100%; height:auto; }
+
+    /* Texte long dans cartes (email) */
+    .card .muted{ word-break: break-all; }
+
+    /* Partner logo : pas d’arrondi ni ombre */
+    .partner-logo-img{
+      max-width:160px; width:40%; height:auto; margin-left:auto;
+      border-radius:0 !important; box-shadow:none !important; object-fit:contain;
+      background:transparent;
+    }
+  </style>
 </head>
 <body>
-  <main class="container" role="main" aria-label="Contact">
-    <div class="avatar" aria-hidden="false">
-      <img src="img/avatar-icon.jpg" alt="Avatar">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container header-inner" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;">
+      <a class="brand" href="#"><span class="brand-name">Findmeonce</span></a>
+      <nav class="main-nav" aria-label="Primary" style="display:flex;align-items:center;gap:.8rem;">
+        <a href="#social" class="nav-link">Réseaux Sociaux</a>
+        <a href="#affiliate" class="nav-link">Partenaires</a>
+        <a href="#recent" class="nav-link">Récent</a>
+        <a href="#contact" class="nav-link">Contact</a>
+        <button id="theme-toggle" class="icon-btn" aria-label="Toggle dark mode" title="Toggle theme" style="background:transparent;border:0;cursor:pointer;">
+          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" class="icon-moon">
+            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="currentColor"/>
+          </svg>
+        </button>
+      </nav>
     </div>
+  </header>
 
-    <h1>Nous allons se rencontrer une fois.</h1>
-    <p class="lead">Disponible partout : contact@findmeonce.com ou via ces réseaux</p>
+  <main id="main">
+    <!-- HERO -->
+    <section class="hero container section">
+      <div class="hero-content" style="flex:1;">
+        <h1 class="h1">Salut, mon nom est <span class="gradient-text">Findmeonce</span></h1>
+        <p class="lead">
+         Salut, mon nom est <strong>Findmeonce</strong>.
+Tu peux aussi m'appeler Anoki, je suis un créateur de contenu québécois débutant. Ce site contient mes liens vers les réseaux sociaux, mes partenaires et bientôt des outils que j’utilise au quotidien. Abonne-toi !
+        </p>
+        <div class="actions" style="display:flex; gap:.6rem; flex-wrap:wrap;">
+          <a class="btn primary" href="#recent">Quoi de neuf ?</a>
+          <a class="btn ghost" href="#contact">Contact</a>
+        </div>
+      </div>
+      <!-- PROFILE PICTURE CARD -->
+      <div class="hero-panel card" style="flex:1;display:flex;align-items:center;justify-content:center; background:var(--card); border:1px solid var(--border); border-radius:var(--radius);">
+        <img src="assets/pfp.png" alt="Photo de profil de Findmeonce"
+             style="width:160px;height:160px;border-radius:50%;object-fit:cover;">
+      </div>
+    </section>
 
-    <nav class="social" aria-label="Social links">
-      <a class="app-link" data-ios="https://www.youtube.com/@Findmeonce" data-android-intent="intent://www.youtube.com/@Findmeonce#Intent;package=com.google.android.youtube;scheme=https;S.browser_fallback_url=https%3A%2F%2Fwww.youtube.com%2F%40Findmeonce;end" href="https://www.youtube.com/@Findmeonce" target="_blank" rel="noopener" aria-label="YouTube">
-        <img src="img/youtube-icon.jpg" alt="youtube-icon">
-      </a>
-      <a class="app-link" data-ios="https://www.tiktok.com/@findmeoncee" data-android-intent="intent://www.tiktok.com/@findmeoncee#Intent;package=com.zhiliaoapp.musically;scheme=https;S.browser_fallback_url=https%3A%2F%2Fwww.tiktok.com%2F%40findmeoncee;end" href="https://www.tiktok.com/@findmeoncee" target="_blank" rel="noopener" aria-label="TikTok">
-        <img src="img/tiktok-icon.jpg" alt="tiktok-icon">
-      </a>
-      <a class="app-link" data-ios="https://www.linkedin.com/in/anoki-charest-544b58383/" data-android-intent="intent://www.linkedin.com/in/anoki-charest-544b58383/#Intent;package=com.linkedin.android;scheme=https;S.browser_fallback_url=https%3A%2F%2Fwww.linkedin.com%2Fin%2Fanoki-charest-544b58383%2F;end" href="https://www.linkedin.com/in/anoki-charest-544b58383/" target="_blank" rel="noopener" aria-label="LinkedIn">
-         <img src="img/linkedin-icon.jpg" alt="linkedin-icon">
-      </a>
-      <a class="app-link" data-ios="https://www.instagram.com/findmeoncee/" data-android-intent="intent://www.instagram.com/findmeoncee/#Intent;package=com.instagram.android;scheme=https;S.browser_fallback_url=https%3A%2F%2Fwww.instagram.com%2Ffindmeoncee%2F;end" href="https://www.instagram.com/findmeoncee/" target="_blank" rel="noopener" aria-label="Instagram">
-         <img src="img/instagram-icon.jpg" alt="instagram-icon">
-      </a>
-      <a href="mailto:contact@findmeonce.com" aria-label="Email">✉</a>
-    </nav>
+    <!-- SOCIAL -->
+    <section class="section container" id="social" aria-labelledby="s-head">
+      <div class="section-head">
+        <h2 id="s-head" class="h2">Follow moi ;)</h2>
+        <p class="muted">Pour rester à jour sur mon contenus</p>
+      </div>
 
-    <section class="music" aria-label="Écouter notre musique">
-      <h2 class="music-title">Écouter</h2>
-      <div class="music-embeds">
-        <iframe title="Spotify player" loading="lazy" style="border-radius:12px" src="https://open.spotify.com/embed/album/0lZbh3qDaY38RIQhL2L8Wf" width="100%" height="152" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
-        <iframe width="100%" height="315" src="https://www.youtube.com/embed/kurseYtP44s" title="YouTube Music player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      <div class="grid cards">
+        <!-- YouTube -->
+        <a class="card link-card" href="https://www.youtube.com/@Findmeonce" target="_blank" rel="noopener">
+          <span class="icon-wrap" aria-hidden="true" title="YouTube">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="#FF0000" d="M23.5 6.2a4 4 0 0 0-2.8-2.8C18.8 3 12 3 12 3s-6.8 0-8.7.4A4 4 0 0 0 .5 6.2 41 41 0 0 0 0 12a41 41 0 0 0 .5 5.8 4 4 0 0 0 2.8 2.8C5.2 21 12 21 12 21s6.8 0 8.7-.4a4 4 0 0 0 2.8-2.8A41 41 0 0 0 24 12a41 41 0 0 0-.5-5.8z"/>
+              <path fill="#fff" d="M9.75 15.02V8.98L15.5 12l-5.75 3.02z"/>
+            </svg>
+          </span>
+          <div>
+            <h3 class="h5">YouTube</h3>
+            <p class="muted">Vidéos & Shorts</p>
+          </div>
+          <span class="arrow" aria-hidden="true">↗</span>
+        </a>
+
+        <!-- Instagram -->
+        <a class="card link-card" href="https://www.instagram.com/findmeoncee/" target="_blank" rel="noopener">
+          <span class="icon-wrap" aria-hidden="true" title="Instagram">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <defs>
+                <linearGradient id="ig" x1="0" x2="1" y1="1" y2="0">
+                  <stop offset="0%" stop-color="#F58529"/><stop offset="30%" stop-color="#DD2A7B"/>
+                  <stop offset="60%" stop-color="#8134AF"/><stop offset="100%" stop-color="#515BD4"/>
+                </linearGradient>
+              </defs>
+              <path fill="url(#ig)" d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5z"/>
+              <circle cx="12" cy="12" r="3.2" fill="#fff"/>
+              <circle cx="17.3" cy="6.7" r="1.2" fill="#fff"/>
+            </svg>
+          </span>
+          <div>
+            <h3 class="h5">Instagram</h3>
+            <p class="muted">Stories & Reels</p>
+          </div>
+          <span class="arrow" aria-hidden="true">↗</span>
+        </a>
+
+        <!-- TikTok -->
+        <a class="card link-card" href="https://www.tiktok.com/@findmeoncee" target="_blank" rel="noopener">
+          <span class="icon-wrap" aria-hidden="true" title="TikTok">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="#000" d="M20 8.2a7.3 7.3 0 0 1-4.2-1.4v7.3a5.8 5.8 0 1 1-5.8-5.8c.3 0 .6 0 .9.1v3.1a2.7 2.7 0 1 0 1.9 2.6V2h3.1a7.3 7.3 0 0 0 4.1 4v2.2z"/>
+            </svg>
+          </span>
+          <div>
+            <h3 class="h5">TikTok</h3>
+            <p class="muted">Bin... des tiktoks</p>
+          </div>
+          <span class="arrow" aria-hidden="true">↗</span>
+        </a>
+
+        <!-- LinkedIn -->
+        <a class="card link-card" href="https://www.linkedin.com/in/anoki-charest-544b58383/" target="_blank" rel="noopener">
+          <span class="icon-wrap" aria-hidden="true" title="LinkedIn">
+            <svg viewBox="0 0 24 24" aria-hidden="true" role="img">
+              <rect width="24" height="24" rx="4" fill="#0A66C2"/>
+              <path fill="#fff" d="M6.9 9H4.6V19.4h2.3V9zm-.1-5c-.8 0-1.4.6-1.4 1.4S6 6.8 6.8 6.8s1.4-.6 1.4-1.4S7.6 4 6.8 4zM19.4 13.7c0-2.7-1.4-4-3.4-4-1.6 0-2.3.9-2.7 1.5V9H11v10.4h2.3v-5.8c0-1.5.9-2.3 2.1-2.3s1.9.8 1.9 2.4v5.8h2.3v-5.8z"/>
+            </svg>
+          </span>
+          <div>
+            <h3 class="h5">LinkedIn</h3>
+            <p class="muted">Profil & actus</p>
+          </div>
+          <span class="arrow" aria-hidden="true">↗</span>
+        </a>
+
+        <!-- Email -> vers section Contact -->
+        <a class="card link-card" href="#contact">
+          <span class="icon-wrap" aria-hidden="true" title="Email">
+            <svg viewBox="0 0 24 24" aria-hidden="true" role="img">
+              <circle cx="12" cy="12" r="11" fill="#2563eb"/>
+              <path d="M7 8.75h10a1.25 1.25 0 0 1 1.25 1.25v5a1.25 1.25 0 0 1-1.25 1.25H7A1.25 1.25 0 0 1 5.75 15V10A1.25 1.25 0 0 1 7 8.75Z" fill="none" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/>
+              <path d="M7 10l5 3.25L17 10" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <div>
+            <h3 class="h5">Email</h3>
+            <p class="muted">contact@findmeonce.com</p>
+          </div>
+          <span class="arrow" aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- AFFILIATE -->
+    <section class="section container" id="affiliate" aria-labelledby="a-head">
+      <div class="section-head">
+        <h2 id="a-head" class="h2">Partenaires & affiliés</h2>
+        <p class="muted">Certaines liens peuvent être des liens d'affiliation ( merci pour votre soutien !).</p>
+      </div>
+
+      <div class="grid cards">
+        <!-- Logo image à droite, 10% OFF vert ; PAS d’arrondi ni ombre -->
+        <a class="card link-card" href="https://anokian.com/ANOKI" target="_blank" rel="sponsored noopener" style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;flex-direction:column;align-items:flex-start;gap:.25rem;">
+            <span class="deal-pill"><span class="gradient-green">*10% OFF sur votre première commande</span></span>
+            <h3 class="h5">Anokian Nature</h3>
+            <p class="muted">Cosmétiques naturels que j'utilise et travail pour | Code: ANOKI pour 10% de rabais*</p>
+          </div>
+          <img src="assets/logo_anokian.png" alt="Logo Anokian Nature" class="partner-logo-img">
+        </a>
+      </div>
+    </section>
+
+    <!-- RECENT CONTENT -->
+    <section class="section container" id="recent" aria-labelledby="r-head">
+      <div class="section-head">
+        <h2 id="r-head" class="h2">Contenu récent</h2>
+        <p class="muted">Dernières vidéos & musique.</p>
+      </div>
+
+      <div class="grid content-grid" style="display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));">
+        <!-- YouTube embed  -->
+        <article class="content-card flush">
+          <div class="embed">
+            <iframe
+              title="Dernière vidéo YouTube"
+              src="https://www.youtube.com/embed/s8WIBwyRPKw?si=i9tP3QTxq3AMa0R2"
+              allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen
+              loading="lazy"></iframe>
+          </div>
+          <div class="content" style="padding:1rem 1.1rem;">
+            <a class="h5" href="https://youtu.be/s8WIBwyRPKw" target="_blank" rel="noopener">Ma dernière vidéo</a>
+            <p class="muted">Ma dernière vidéo. Assez drôle, c’est plus une vidéo pour le plaisir qu’une musique sérieuse.</p>
+          </div>
+        </article>
+
+        <!-- Spotify: Le tracteur à gazon  -->
+        <article class="content-card flush">
+          <div class="embed embed--spotify">
+            <iframe
+              src="https://open.spotify.com/embed/track/46MoKgCdeC5ng4cDvtKPeb?utm_source=generator"
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              loading="lazy"></iframe>
+          </div>
+          <div class="content" style="padding:1rem 1.1rem;">
+            <a class="h5" href="https://open.spotify.com/track/46MoKgCdeC5ng4cDvtKPeb" target="_blank" rel="noopener">
+              🎵 Le tracteur à gazon
+            </a>
+            <p class="muted">Écouter sur Spotify</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="contact-section" id="contact" aria-labelledby="c-head">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="c-head" class="h2">Contact</h2>
+          <p class="muted">Pour collabs, business, ou juste jaser 👋</p>
+        </div>
+
+        <div class="grid cards">
+          <a class="card link-card" href="mailto:contact@findmeonce.com">
+            <span class="icon-wrap" aria-hidden="true" title="Email">
+              <svg viewBox="0 0 24 24" aria-hidden="true" role="img">
+                <circle cx="12" cy="12" r="11" fill="#2563eb"/>
+                <path d="M7 8.75h10a1.25 1.25 0 0 1 1.25 1.25v5a1.25 1.25 0 0 1-1.25 1.25H7A1.25 1.25 0 0 1 5.75 15V10A1.25 1.25 0 0 1 7 8.75Z" fill="none" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/>
+                <path d="M7 10l5 3.25L17 10" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <div>
+              <h3 class="h5">Email direct</h3>
+              <p class="muted">contact@findmeonce.com</p>
+            </div>
+            <span class="arrow" aria-hidden="true">↗</span>
+          </a>
+
+          <a class="card link-card" href="https://www.linkedin.com/in/anoki-charest-544b58383/" target="_blank" rel="noopener">
+            <span class="icon-wrap" aria-hidden="true" title="LinkedIn">
+              <svg viewBox="0 0 24 24" aria-hidden="true" role="img">
+                <rect width="24" height="24" rx="4" fill="#0A66C2"/>
+                <path fill="#fff" d="M6.9 9H4.6V19.4h2.3V9zm-.1-5c-.8 0-1.4.6-1.4 1.4S6 6.8 6.8 6.8s1.4-.6 1.4-1.4S7.6 4 6.8 4zM19.4 13.7c0-2.7-1.4-4-3.4-4-1.6 0-2.3.9-2.7 1.5V9H11v10.4h2.3v-5.8c0-1.5.9-2.3 2.1-2.3s1.9.8 1.9 2.4v5.8h2.3v-5.8z"/>
+              </svg>
+            </span>
+            <div>
+              <h3 class="h5">LinkedIn</h3>
+              <p class="muted">Pour eux qui sont plus sérieux</p>
+            </div>
+            <span class="arrow" aria-hidden="true">↗</span>
+          </a>
+        </div>
       </div>
     </section>
   </main>
 
-<script>
-(function(){
-  var links = document.querySelectorAll('.app-link');
-  function isAndroidChrome() {
-    var ua = navigator.userAgent || '';
-    return /Android/.test(ua) && /Chrome/.test(ua);
-  }
-  function isIOS() {
-    var ua = navigator.userAgent || '';
-    return /iPhone|iPad|iPod/.test(ua);
-  }
-  links.forEach(function(el){
-    el.addEventListener('click', function(e){
-      if (e.metaKey || e.ctrlKey) return;
-      e.preventDefault();
-      var webUrl = el.href;
-      if (isAndroidChrome()) {
-        window.location = el.getAttribute('data-android-intent') || webUrl;
-        return;
-      }
-      if (isIOS()) {
-        var now = Date.now();
-        var appUrl = el.getAttribute('data-ios') || webUrl;
-        var iframe = document.createElement('iframe');
-        iframe.style.display = 'none';
-        iframe.src = appUrl;
-        document.body.appendChild(iframe);
-        setTimeout(function(){
-          document.body.removeChild(iframe);
-          if (Date.now() - now < 1200) window.location = webUrl;
-        }, 800);
-        return;
-      }
-      window.location = webUrl;
-    }, false);
-  });
-})();
-</script>
+  <footer class="site-footer container section" style="padding-top:1.5rem; padding-bottom:2rem;">
+    <p class="muted">
+      © <span id="year"></span> Findmeonce · Abonnez-vous les pogos
+    </p>
+  </footer>
+
+  <!-- JS: dark mode + année -->
+  <script>
+    (function(){
+      const root = document.documentElement;
+      const saved = localStorage.getItem('theme');
+      if (saved) root.setAttribute('data-theme', saved);
+      document.getElementById('theme-toggle')?.addEventListener('click', () => {
+        const current = root.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+      });
+      document.getElementById('year').textContent = new Date().getFullYear();
+    })();
+  </script>
 </body>
 </html>
