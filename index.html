@@ -1,33 +1,37 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Follow Findmeonce</title>
-  <meta name="description" content="Portfolio et hub de liens modernes. Créateur de contenu, vidéos, musique, réseaux sociaux." />
-  <meta property="og:title" content="Follow Findmeonce" />
-  <meta property="og:description" content="Réseaux, contenus récents et partenaires, noir et bleu profond." />
+  <title>Findmeonce • Link Hub</title>
+  <meta name="description" content="Findmeonce link hub with the latest video and social shortcuts." />
+  <meta property="og:title" content="Findmeonce • Link Hub" />
+  <meta property="og:description" content="Latest video, socials and contact for Findmeonce." />
   <meta property="og:type" content="website" />
   <link rel="icon" type="image/png" href="assets/pfp.png" />
-  <meta name="theme-color" content="#0a1020" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#050812" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#4d5b43">
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
-  <main id="main">
-    <div id="hero"></div>
-  <div id="social"></div>
-  <div id="videos"></div>
-  <div id="portfolio"></div>
+  <main id="main" class="linkhub" aria-labelledby="profile-name">
+    <div class="linkhub-card">
+      <header class="profile">
+        <div class="avatar">
+          <img src="assets/pfp.png" alt="Portrait of Findmeonce" width="120" height="120" loading="lazy" decoding="async" />
+        </div>
+        <h1 id="profile-name">Findmeonce</h1>
+        <p class="subhead">Canadian content creator.</p>
+      </header>
+
+      <nav class="link-list" aria-label="Featured links">
+        <a class="link-btn" href="https://youtu.be/Aoo3W1S2RaY?si=hxnBOCiEGTQsitZo" target="_blank" rel="noopener">Watch the latest video</a>
+        <a class="link-btn" href="https://www.youtube.com/@Findmeonce" target="_blank" rel="noopener">YouTube channel</a>
+        <a class="link-btn" href="https://www.instagram.com/findmeoncee/" target="_blank" rel="noopener">Instagram</a>
+        <a class="link-btn" href="https://www.tiktok.com/@findmeoncee" target="_blank" rel="noopener">TikTok</a>
+        <a class="link-btn" href="mailto:contact@findmeonce.com">Email me</a>
+      </nav>
+
+    </div>
   </main>
-
-  <div id="lang-switch" class="lang-switch floating" role="group" aria-label="Language switch">
-    <button type="button" class="lang-btn" data-lang="en" aria-pressed="false" title="English">EN</button>
-    <button type="button" class="lang-btn" data-lang="fr" aria-pressed="false" title="Français">FR</button>
-  </div>
-
-  <div id="footer"></div>
-
-  <script src="js/script.js" defer></script>
 </body>
 </html>
