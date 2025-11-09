@@ -8,9 +8,9 @@
   --surface-muted: rgba(255,255,255,0.2);
   --border: rgba(255,255,255,0.1);
   --border-strong: rgba(255,255,255,0.2);
-  --text: #dbe5d1;
-  --heading: #e6f0de;
-  --muted: rgba(210, 226, 198, 0.82);
+  --text: #ffffff;
+  --heading: #ffffff;
+  --muted: #ffffff;
   --brand: #f6f0de;
   --brand-soft: rgba(246,240,222,0.35);
   --brand-gradient: linear-gradient(135deg, #f9f3dc 0%, #ece8d1 100%);
@@ -48,10 +48,21 @@ body {
   height: 100%;
   font: 500 16px/1.65 "Inter", "SF Pro Display", "Segoe UI", sans-serif;
   color: var(--text);
-  background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), url("../assets/hero.jpg") center / cover no-repeat fixed;
+  background-color: var(--page-bg);
+  background-image: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), url("../assets/Hero.jpg");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+@media (min-width: 768px) and (hover: hover) {
+  body {
+    background-attachment: fixed;
+  }
 }
 
 main {
