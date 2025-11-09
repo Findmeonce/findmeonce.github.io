@@ -24,14 +24,104 @@
       </header>
 
       <nav class="link-list" aria-label="Featured links">
-        <a class="link-btn" href="https://youtu.be/Aoo3W1S2RaY?si=hxnBOCiEGTQsitZo" target="_blank" rel="noopener">Watch the latest video</a>
-        <a class="link-btn" href="https://www.youtube.com/@Findmeonce" target="_blank" rel="noopener">YouTube channel</a>
-        <a class="link-btn" href="https://www.instagram.com/findmeoncee/" target="_blank" rel="noopener">Instagram</a>
-        <a class="link-btn" href="https://www.tiktok.com/@findmeoncee" target="_blank" rel="noopener">TikTok</a>
+        <a
+          class="link-btn"
+          href="https://youtu.be/Aoo3W1S2RaY?si=hxnBOCiEGTQsitZo"
+          data-deeplink
+          data-ios="vnd.youtube://Aoo3W1S2RaY"
+          data-android-package="com.google.android.youtube"
+          data-web="https://youtu.be/Aoo3W1S2RaY?si=hxnBOCiEGTQsitZo"
+          rel="noopener"
+        >
+          Watch the latest video
+        </a>
+        <a
+          class="link-btn"
+          href="https://www.youtube.com/@Findmeonce"
+          data-deeplink
+          data-ios="youtube://www.youtube.com/@Findmeonce"
+          data-android-package="com.google.android.youtube"
+          data-web="https://www.youtube.com/@Findmeonce"
+          rel="noopener"
+        >
+          YouTube channel
+        </a>
+        <a
+          class="link-btn"
+          href="https://www.instagram.com/findmeoncee/"
+          data-deeplink
+          data-ios="instagram://user?username=findmeoncee"
+          data-android-package="com.instagram.android"
+          data-web="https://www.instagram.com/findmeoncee/"
+          rel="noopener"
+        >
+          Instagram
+        </a>
+        <a
+          class="link-btn"
+          href="https://www.tiktok.com/@findmeoncee"
+          data-deeplink
+          data-ios="tiktok://user/@findmeoncee"
+          data-android-package="com.zhiliaoapp.musically"
+          data-web="https://www.tiktok.com/@findmeoncee"
+          rel="noopener"
+        >
+          TikTok
+        </a>
         <a class="link-btn" href="mailto:contact@findmeonce.com">Email me</a>
       </nav>
 
     </div>
   </main>
+  <script>
+    (function(){
+      const doc = document.documentElement;
+      function setViewportUnit(){
+        doc.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+      }
+      setViewportUnit();
+      window.addEventListener('resize', setViewportUnit);
+
+      const isIOS = () => /iP(hone|ad|od)/i.test(navigator.userAgent);
+      const isAndroid = () => /Android/i.test(navigator.userAgent);
+      const buildAndroidIntent = (webUrl, pkg) => {
+        const cleaned = (webUrl || '').replace(/^https?:\/\//,'');
+        if (!cleaned) return '';
+        if (!pkg) return `intent://${cleaned}#Intent;scheme=https;end`;
+        return `intent://${cleaned}#Intent;scheme=https;package=${pkg};end`;
+      };
+      function openDeepLink(link){
+        const ios = link.getAttribute('data-ios');
+        const androidPackage = link.getAttribute('data-android-package');
+        const web = link.getAttribute('data-web') || link.getAttribute('href');
+        const start = Date.now();
+        if (isIOS() && ios){
+          window.location.href = ios;
+          setTimeout(() => {
+            if (Date.now() - start < 1500 && web) window.location.href = web;
+          }, 1200);
+          return;
+        }
+        if (isAndroid()){
+          const intent = buildAndroidIntent(web, androidPackage);
+          if (intent){
+            window.location.href = intent;
+            setTimeout(() => {
+              if (Date.now() - start < 1500 && web) window.location.href = web;
+            }, 1200);
+            return;
+          }
+        }
+        if (web) window.open(web, '_blank', 'noopener');
+      }
+
+      document.addEventListener('click', (event) => {
+        const link = event.target.closest('[data-deeplink]');
+        if (!link) return;
+        event.preventDefault();
+        openDeepLink(link);
+      }, true);
+    })();
+  </script>
 </body>
 </html>
